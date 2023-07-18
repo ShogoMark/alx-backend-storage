@@ -1,8 +1,8 @@
 -- A stored procedure that computes and store the avg score for a student
 
-DROP PROCEDURE IF EXISTS ComputerAverageScoreForUser;
+DROP PROCEDURE IF EXISTS ComputeAverageScoreForUser;
 DELIMITER !!
-CREATE PROCEDURE ComputerAverageScoreForUser(user_id INT)
+CREATE PROCEDURE ComputeAverageScoreForUser(user_id INT)
 BEGIN
 	DECLARE total_score INT DEFAULT 0;
 	DECLARE project_count INT DEFAULT 0;
