@@ -11,7 +11,7 @@ class Cache:
 
         self._redis.flushdb()
 
-    def store(self, data) -> str:
+    def store(self, data: Union[str, bytes, int, float]) -> str:
         """takes in data as argument and return key as strings"""
         key = str(uuid.uuid4())
         self._redis.setex(key, 3600, data)
