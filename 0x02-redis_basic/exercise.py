@@ -31,14 +31,20 @@ class Cache:
 
         return key
 
-    def get(self, key: str, fn: Callable = None) -> Union[str, bytes, int, float, None]:
+    def get(
+        self,
+        key: str,
+        fn: Callable = None,
+    ) -> Union[str, bytes, int, float, None]:
         """takes in key as string and callable function"""
+        if fn is None:
+            return self._redis.get(key)
+
         data = self._redis.get(key)
         if data:
             data = data.decode()
-            if fn:
-                return fn(data)
-            return data
+            return fn(data)
+
         return None
 
     def get_str(self, key: str) -> Union[str, None]:
