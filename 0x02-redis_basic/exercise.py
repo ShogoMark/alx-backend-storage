@@ -6,6 +6,14 @@ import uuid
 from typing import Union, Callable
 
 
+def count_calls(fn: Callable) -> Callable:
+    def wrapper(self, *args, **kwargs):
+        wrapper.call_count += 1
+        return fn(self, *args, **kwargs)
+
+    wrapper.call_count = 0
+    return wrapper
+
 class Cache:
     """class Cache initiating _redis with redis.Redis()"""
 
@@ -15,6 +23,7 @@ class Cache:
 
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """takes in data as argument and return key as strings"""
         key = str(uuid.uuid4())
@@ -22,8 +31,7 @@ class Cache:
 
         return key
 
-    def get(self, key: str, fn: Callable = None) ->
-    Union[str, bytes, int, float, None]:
+    def get(self, key: str, fn: Callable = None) -> Union[str, bytes, int, float, None]:
         """takes in key as string and callable function"""
         data = self._redis.get(key)
         if data:
