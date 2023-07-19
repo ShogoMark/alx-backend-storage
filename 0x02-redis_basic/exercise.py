@@ -3,6 +3,7 @@
 import redis
 import uuid
 
+
 class Cache:
     def __init__(self):
         self._redis = redis.Redis()
