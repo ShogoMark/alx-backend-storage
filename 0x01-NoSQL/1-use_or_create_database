@@ -1,0 +1,3 @@
+// script that creates or uses database my_db
+
+use my_db
