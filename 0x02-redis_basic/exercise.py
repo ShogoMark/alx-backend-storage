@@ -35,7 +35,7 @@ class Cache:
 
     def get_str(self, key: str) -> Union[str, None]:
         """takes in key and returns the respective format"""
-        return self.get(key, fn=lambda d: d.decode("utf-8"))
+        return self.get(key, fn=str)
 
     def get_int(self, key: str) -> Union[int, None]:
         """takes in key and return its respective format"""
