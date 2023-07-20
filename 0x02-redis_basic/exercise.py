@@ -16,6 +16,7 @@ def count_calls(fn: Callable) -> Callable:
 
 class Cache:
     """class Cache initiating _redis with redis.Redis()"""
+    call_count = {}
 
     def __init__(self):
         """__init__ function for class Cache"""
@@ -49,6 +50,7 @@ class Cache:
         """takes in key and return its respective format"""
         return self.get(key, fn=int)
 
-    def get_call_count(self, method_name: str) -> int:
+    @classmethod
+    def get_call_count(cls, method_name: str) -> int:
         """returns the call count for the specified method"""
-        return int(self._redis.get(method_name) or 0)
+        return int(cls.call_count.get(method_name) or 0)
