@@ -6,6 +6,7 @@ import uuid
 from typing import Union, Callable
 from functools import wraps
 
+
 def call_history(method: Callable) -> Callable:
     @wraps(method)
     def wrapper1(self, *args):
@@ -14,7 +15,7 @@ def call_history(method: Callable) -> Callable:
 
         # store the input arguments in the Redis list
         self._redis.rpush(inputs_key, str(args))
-        
+
         # retrieve output and store in outputs list
         res = method(self, *args)
         self._redis.rpush(outputs_key, str(res))
@@ -31,6 +32,7 @@ def count_calls(fn: Callable) -> Callable:
         return fn(self, *args, **kwargs)
 
     return wrapper
+
 
 class Cache:
     """class Cache initiating _redis with redis.Redis()"""
@@ -49,7 +51,11 @@ class Cache:
         self._redis.setex(key, 3600, data)
         return key
 
-    def get(self, key: str, fn: Callable = None) -> Union[str, bytes, int, float, None]:
+    def get(
+            self,
+            key: str,
+            fn: Callable = None
+    ) -> Union[str, bytes, int, float, None]:
         """takes in key as string and callable function"""
         if fn is None:
             return self._redis.get(key)
