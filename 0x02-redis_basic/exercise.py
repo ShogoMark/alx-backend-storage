@@ -40,6 +40,7 @@ def call_history(method: Callable) -> Callable:
 
 
 def count_calls(fn: Callable) -> Callable:
+    """counts the times calls are made to function"""
     @wraps(fn)
     def wrapper(self, *args, **kwargs):
         self._redis.incr(fn.__qualname__)
