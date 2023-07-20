@@ -6,6 +6,24 @@ import uuid
 from typing import Union, Callable
 from functools import wraps
 
+def call_history(method: Callable) -> Callable:
+    @wraps(method)
+    def wrapper1(self, *args):
+        inputs_key = "{}:inputs".format(method.__qualname__)
+        outputs_key = "{}:outputs".format(method.__qualname__)
+
+        # store the input arguments in the Redis list
+        self._redis.rpush(inputs_key, str(args))
+        
+        # retrieve output and store in outputs list
+        res = method(self, *args)
+        self._redis.rpush(outputs_key, str(res))
+
+        return res
+
+    return wrapper1
+
+
 def count_calls(fn: Callable) -> Callable:
     @wraps(fn)
     def wrapper(self, *args, **kwargs):
@@ -24,6 +42,7 @@ class Cache:
         self._redis.flushdb()
 
     @count_calls
+    @call_history
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """takes in data as argument and return key as strings"""
         key = str(uuid.uuid4())
