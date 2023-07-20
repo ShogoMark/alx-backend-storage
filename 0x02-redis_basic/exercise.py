@@ -4,14 +4,14 @@
 import redis
 import uuid
 from typing import Union, Callable
-
+from functools import wraps
 
 def count_calls(fn: Callable) -> Callable:
+    @wraps(fn)
     def wrapper(self, *args, **kwargs):
-        wrapper.call_count += 1
+        self._redis.incr(fn.__qualname__)
         return fn(self, *args, **kwargs)
 
-    wrapper.call_count = 0
     return wrapper
 
 class Cache:
@@ -20,7 +20,6 @@ class Cache:
     def __init__(self):
         """__init__ function for class Cache"""
         self._redis = redis.Redis()
-
         self._redis.flushdb()
 
     @count_calls
@@ -28,14 +27,9 @@ class Cache:
         """takes in data as argument and return key as strings"""
         key = str(uuid.uuid4())
         self._redis.setex(key, 3600, data)
-
         return key
 
-    def get(
-        self,
-        key: str,
-        fn: Callable = None,
-    ) -> Union[str, bytes, int, float, None]:
+    def get(self, key: str, fn: Callable = None) -> Union[str, bytes, int, float, None]:
         """takes in key as string and callable function"""
         if fn is None:
             return self._redis.get(key)
@@ -54,3 +48,7 @@ class Cache:
     def get_int(self, key: str) -> Union[int, None]:
         """takes in key and return its respective format"""
         return self.get(key, fn=int)
+
+    def get_call_count(self, method_name: str) -> int:
+        """returns the call count for the specified method"""
+        return int(self._redis.get(method_name) or 0)
