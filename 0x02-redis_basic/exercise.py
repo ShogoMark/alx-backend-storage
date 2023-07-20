@@ -26,7 +26,7 @@ class Cache:
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """takes in data as argument and return key as strings"""
         key = str(uuid.uuid4())
-        self._redis.setex(key, 3600, data)
+        self._redis.setex(key: str, 3600, data: Union[str, bytes, int, float])
         return key
 
     def get(self, key: str, fn: Callable = None) -> Union[str, bytes, int, float, None]:
