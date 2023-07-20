@@ -7,7 +7,7 @@ from typing import Union, Callable
 from functools import wraps
 
 
-def replay(self, method: Callable):
+def replay(self, method: Callable) -> Callable:
     """Display the history of calls for a particular function"""
     inputs_key = "{}:inputs".format(method.__qualname__)
     outputs_key = "{}:outputs".format(method.__qualname__)
