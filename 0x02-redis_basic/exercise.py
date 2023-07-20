@@ -7,11 +7,25 @@ from typing import Union, Callable
 from functools import wraps
 
 
+def replay(self, method: Callable):
+    """display the history of call for a particular function"""
+    inputs_key = "{}:inputs".format(method.__qualname__)
+    outputs_key = "{}:outputs".format(method.__qualname__)
+
+    inputs = self._redis.lrange(inputs_key, 0, -1)
+    outputs = self._redis.lrange(outputs_key, 0, -1)
+
+    for input_data, output_data in zip(inputs, outputs):
+        input_args = eval(input_data.decode())
+        output_res = eval(output_data.decode())
+    print("{}{} -> {}".format(method.__qualname__, input_args, output_res)
+
+
 def call_history(method: Callable) -> Callable:
     @wraps(method)
     def wrapper1(self, *args):
-        inputs_key = "{}:inputs".format(method.__qualname__)
-        outputs_key = "{}:outputs".format(method.__qualname__)
+        inputs_key="{}:inputs".format(method.__qualname__)
+        outputs_key="{}:outputs".format(method.__qualname__)
 
         # store the input arguments in the Redis list
         self._redis.rpush(inputs_key, str(args))
